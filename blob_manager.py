@@ -26,6 +26,7 @@ def update_blob_from_path(blob_name, data_frame):
     try:
         pf_local = ParquetFile(local_path)
         df_local = pf_local.to_pandas()
+
     except ParquetException:
         print('Failed to convert blob to parquet or create pandas from parquet ' + str(ParquetException))
 
@@ -33,6 +34,7 @@ def update_blob_from_path(blob_name, data_frame):
 
     try:
         write(local_path, df_to_submit)
+
     except ParquetException:
         print('Failed to convert pandas to parquet ' + str(ParquetException))
 
@@ -46,8 +48,10 @@ def delete_blob(blob_name):
 def get_blob_list():
     blobs = []
     generator = block_blob_service.list_blobs(container_name)
+
     for blob in generator:
         blobs.append('Blob Name: {}'.format(blob.name))
+
     return blobs
 
 
@@ -66,6 +70,7 @@ def delete_container():
 def get_container_list():
     containers = []
     generator = block_blob_service.list_containers()
+
     for container in generator:
         containers.append('Container Name: {}'.format(container.name))
 

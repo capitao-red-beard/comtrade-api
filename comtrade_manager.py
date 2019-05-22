@@ -61,8 +61,11 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
     #     e.g. replace country names by country codes or 'YYYYMM-YYYYMM' by a list of months
 
     reporter = transform_reporter(reporter)
+
     partner = transform_partner(partner)
+
     tradeflow = transform_trade_flow(tradeflow)
+
     period = transform_period(period, frequency)
 
     # (2) warn/ raise an error if appropriate
@@ -74,6 +77,7 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
     if any(len(inpt) > 5 for inpt in [reporter, partner, period]) and human_readable:
         print("Using the option human_readable=True is not recommended in this case "
               "because several API calls are necessary.")
+
         print("When using the human_readable=True option, messages from the API cannot be received!")
 
         response = input("Press y if you want to continue anyways. ")
@@ -91,7 +95,6 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
     # product is limited to 20 inputs
 
     for i, j, k, m in itertools.product(*slice_points):
-
         df = download_trade_database(human_readable=human_readable, verbose=verbose,
                                      period=period[k:k + 5], reporter=reporter[i:i + 5],
                                      partner=partner[j:j + 5], product=product[m:m + 20],
@@ -106,7 +109,9 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
 
     if len(dfs) > 0:
         df_all = pd.concat(dfs)
+
         filename = filename if len(filename.split('.')) == 2 else filename + '.csv'  # add '.csv' if necessary
+
         df_all.to_csv(filename)
 
         if blob:
@@ -201,6 +206,7 @@ def transform_reporter(reporter):
     """
     # if single country code/ name, convert to list
     reporter = [reporter] if not isinstance(reporter, list) else reporter
+
     # replace country names by country codes
     reporter = [r if is_country_code(r) else find_reporter_code(r) for r in reporter]
 
@@ -213,6 +219,7 @@ def transform_partner(partner):
     """
     # if single country code/ name, convert to list
     partner = [partner] if not isinstance(partner, list) else partner
+
     # replace country names by country codes
     partner = [p if is_country_code(p) else find_partner_code(p) for p in partner]
 
@@ -255,13 +262,16 @@ def transform_period(period, frequency):
             if frequency.lower() == 'a':
                 y_start = int(start)
                 y_end = int(end)
+
                 for y in range(y_start, y_end + 1):
                     period_new.append(y)
 
             elif frequency.lower() == 'm':
                 y_start, m_start = int(start[:4]), int(start[4:])
                 y_end, m_end = int(end[:4]), int(end[4:])
+
                 n = (m_end - m_start + 1) + 12 * (y_end - y_start)
+
                 y, m = y_start, m_start
 
                 for _ in range(n):
@@ -269,9 +279,11 @@ def transform_period(period, frequency):
 
                     if 1 <= m < 12:
                         m += 1
+
                     elif m == 12:
                         m = 1
                         y += 1
+
                     else:
                         raise Exception("Shouldn't get here.")
 
@@ -291,6 +303,7 @@ def is_country_code(inpt):
     """
     if isinstance(inpt, str):
         return inpt.lower() == 'all' or inpt.isdigit()
+
     else:
         return isinstance(inpt, int) or isinstance(inpt, np.int64)
 
@@ -325,6 +338,7 @@ def find_country_code(country, reporter_or_partner):
     # https://comtrade.un.org/data/cache/reporterAreas.json every time
     if not os.path.exists(reporter_or_partner + 'Areas.csv'):
         download_country_codes_file(reporter_or_partner)
+
     df = pd.read_csv(reporter_or_partner + 'Areas.csv', encoding='latin_1', index_col=0)
 
     # look for an exact match
@@ -332,6 +346,7 @@ def find_country_code(country, reporter_or_partner):
 
     if sum(mask) == 1:
         code = df.index[mask].tolist()[0]
+
         return code
 
     # look for a partial match
@@ -362,7 +377,9 @@ def download_country_codes_file(reporter_or_partner):
     input: 'reporter' or 'partner'
     """
     url = 'https://comtrade.un.org/data/cache/{}Areas.json'.format(reporter_or_partner)
+
     json_dict = requests.get(url).json()
+
     df = pd.DataFrame.from_dict(json_dict['results'])
     df = df.set_index('id')
     df.drop('all', inplace=True)
@@ -399,6 +416,7 @@ def product_codes_with_parent(parent_code):
         download_product_codes_file()
 
     df = load_product_codes_file()
+
     mask = df.parent == parent_code
 
     return df.text[mask].to_dict()
@@ -425,12 +443,16 @@ def search_product_code(pat, case=True, flags=0, regex=True, n_digits=None):
     """
     if not os.path.exists('classificationHS.csv'):
         download_product_codes_file()
+
     df = load_product_codes_file()
 
     if n_digits is not None:
         mask1 = df.text.str.contains(pat, case=case, flags=flags, regex=regex)
+
         mask2 = df.index.to_series().apply(lambda digit: len(digit) == n_digits)
+
         mask = mask1 & mask2
+
     else:
         mask = df.text.str.contains(pat, case=case, flags=flags, regex=regex)
 
@@ -452,7 +474,9 @@ def download_product_codes_file():
     The short-cut entries for 'ALL', 'TOTAL', 'AG2', 'AG4' and 'AG6' are deleted.
     """
     url = 'https://comtrade.un.org/data/cache/classificationHS.json'
+
     json_dict = requests.get(url).json()
+
     df = pd.DataFrame.from_dict(json_dict['results'])
     df = df.set_index('id')
     df.drop(['ALL', 'TOTAL', 'AG2', 'AG4', 'AG6'], inplace=True)

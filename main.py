@@ -17,5 +17,6 @@ product_list = ['02', '03', '04', '10', '07', '17', '09', '21', '22', '24', '12'
 
 for k in dict_countries:
     print(dict_countries[k] + '_' + years)
+
     cm.download_trade_data(filename=dict_countries[k] + '_' + years, period=years, frequency='M', reporter=k,
                            partner=list(dict_countries), product=product_list)
