@@ -104,8 +104,8 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
     # product is limited to 20 inputs
 
     for i, j, k, m in itertools.product(*slice_points):
-        df = download_trade_database(human_readable=human_readable, verbose=verbose, period=period[k:k + 5],
-                                     reporter=reporter[i:i + 5], partner=partner[j:j + 5], product=product[m:m + 20],
+        df = download_trade_database(human_readable=human_readable, verbose=verbose, period=period[k: k + 5],
+                                     reporter=reporter[i: i + 5], partner=partner[j: j + 5], product=product[m: m + 20],
                                      tradeflow=tradeflow, frequency=frequency, )
 
         if df is not None:
