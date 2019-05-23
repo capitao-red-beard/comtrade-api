@@ -18,43 +18,53 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
     If necessary, it calls the API several times.
 
     There are two modes:
-    - human_readable = False (default): headings in output are not human-readable but error messages from the API are received and displayed
-    - human_readable = True: headings in output are human-readable but we do not get messages from the API about potential problems (not recommended if several API calls are necessary)
+    - human_readable = False (default):
+     headings in output are not human-readable but error messages from the API are received and displayed
+
+    - human_readable = True:
+    headings in output are human-readable but we do not get messages from the API about potential problems
+    (not recommended if several API calls are necessary)
 
     Additional option:
-    verbose = False in order to suppress both messages from the API and messages like '100 records downloaded and saved in filename.csv' (True is default)
+    verbose = False:
+    in order to suppress both messages from the API and messages like '100 records downloaded and saved in filename.csv'
+    (True is default)
 
     Parameters:
     Using parameter values suggested in the API documentation should always work.
     For the parameters period, reporter, partner and tradeflow more intuitive options have been added.
-     - period     [ps]   : depending on freq, either YYYY or YYYYMM (or 'YYYY-YYYY'/ 'YYYYMM-YYYYMM' or a list of those) or 'now' or 'recent' (= 5 most recent years/ months) or 'all'
+     - period     [ps]   : depending on freq, either YYYY or YYYYMM (or 'YYYY-YYYY'/ 'YYYYMM-YYYYMM' or a list of those)
+      or 'now' or 'recent' (= 5 most recent years/ months) or 'all'
+
      - frequency  [freq] : 'A' (= annual) or 'M' (= monthly)
-     - reporter   [r]    : reporter code/ name (case-sensitive!) or list of reporter codes/ names or 'all' (see https://comtrade.un.org/data/cache/reporterAreas.json)
-     - partner    [p]    : partner code/ name  (case-sensitive!) or list of partner codes/ names or 'all' (see https://comtrade.un.org/data/cache/partnerAreas.json)
-     - product    [cc]   : commodity code valid in the selected classification (here: Harmonized System HS) or 'total' (= aggregated) or 'all' or 'HG2', 'HG4' or 'HG6' (= all 2-, 4- and 6-digit HS commodities)
-     - tradeflow  [rg]   : 'import[s]' or 'export[s]'; see https://comtrade.un.org/data/cache/tradeRegimes.json for further, lower-level options
+
+     - reporter   [r]    : reporter code/ name (case-sensitive!) or list of reporter codes/ names or 'all'
+      (see https://comtrade.un.org/data/cache/reporterAreas.json)
+
+     - partner    [p]    : partner code/ name  (case-sensitive!) or list of partner codes/ names or 'all'
+     (see https://comtrade.un.org/data/cache/partnerAreas.json)
+
+     - product    [cc]   : commodity code valid in the selected classification (here: Harmonized System HS) or 'total'
+      (= aggregated) or 'all' or 'HG2', 'HG4' or 'HG6' (= all 2-, 4- and 6-digit HS commodities)
+
+     - tradeflow  [rg]   : 'import[s]' or 'export[s]';
+     see https://comtrade.un.org/data/cache/tradeRegimes.json for further, lower-level options
+
      - blob       [bl]   : boolean variable to check whether to send the CSV to the azure blob storage
 
      Information copied from the API Documentation (https://comtrade.un.org/data/doc/api/):
-     Usage limits
-     Rate limit (guest):
-     1 request every second (per IP address or authenticated user).
+      Usage limits
+      Rate limit (guest): 1 request every second (per IP address or authenticated user).
 
-     Usage limit (guest):
-     100 requests per hour (per IP address or authenticated user).
+      Usage limit (guest): 100 requests per hour (per IP address or authenticated user).
 
-     Parameter combination limit:
-     ps, r and p are limited to 5 codes each. Only one of the above codes may use the special ALL value in a given API call.
+      Parameter combination limit: ps, r and p are limited to 5 codes each.
+      Only one of the above codes may use the special ALL value in a given API call.
 
-     Classification codes (cc) are limited to 20 items. ALL is always a valid classification code.
+      Classification codes (cc) are limited to 20 items. ALL is always a valid classification code.
 
-     If you hit a usage limit a 409 (conflict) error is returned along with a message specifying why the request was blocked and when requests may resume.
-
-     Stability
-     Notice:
-     This API may be considered stable. However, new fields may be added in the future.
-     While this API is still subject to change, changes that remove fields will be announced and a method of accessing legacy field formats will be made available during a transition period.
-     New fields may be added to the CSV or JSON output formats without warning. Please write your code that accesses the API accordingly.
+      If you hit a usage limit a 409 (conflict) error is returned
+       along with a message specifying why the request was blocked and when requests may resume.
      """
 
     # (1) replace more convenient input options by ones that can by understood by API
@@ -89,15 +99,13 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
 
     dfs = []
 
-    slice_points = [range(0, len(inpt), 5) for inpt in [reporter, partner, period]] + \
-                   [range(0, len(product), 20)]
+    slice_points = [range(0, len(inpt), 5) for inpt in [reporter, partner, period]] + [range(0, len(product), 20)]
     # since the parameters reporter, partner and period are limited to 5 inputs each and
     # product is limited to 20 inputs
 
     for i, j, k, m in itertools.product(*slice_points):
-        df = download_trade_database(human_readable=human_readable, verbose=verbose,
-                                     period=period[k:k + 5], reporter=reporter[i:i + 5],
-                                     partner=partner[j:j + 5], product=product[m:m + 20],
+        df = download_trade_database(human_readable=human_readable, verbose=verbose, period=period[k:k + 5],
+                                     reporter=reporter[i:i + 5], partner=partner[j:j + 5], product=product[m:m + 20],
                                      tradeflow=tradeflow, frequency=frequency, )
 
         if df is not None:
@@ -128,21 +136,37 @@ def download_trade_database(human_readable=False, verbose=True, period='recent',
     Downloads records from the UN Comtrade database and returns pandas dataframe using one API call.
 
     There are two modes:
-    - human_readable = False (default): headings in output are not human-readable but error messages from the API are received and displayed
-    - human_readable = True: headings in output are human-readable but we do not get messages from the API about potential problems
+    - human_readable = False (default): headings in output are not human-readable
+     but error messages from the API are received and displayed
+    - human_readable = True: headings in output are human-readable
+     but we do not get messages from the API about potential problems
 
     Additional option:
-    verbose = False in order to suppress messages from the API (True is default)
+     verbose = False in order to suppress messages from the API (True is default)
 
     Parameters of the API call:
-    As documented in the API documentation.
-    More intuitive options for the parameters period, reporter, partner and tradeflow are only available in the function 'download_trade_data'
-     - period     [ps]   : depending on freq, either YYYY or YYYYMM (or a list of those) or 'now' or 'recent' (= 5 most recent years/ months) or 'all'
-     - frequency  [freq] : 'A' (= annual) or 'M' (= monthly)
-     - reporter   [r]    : reporter code or list of reporter codes or 'all' (see https://comtrade.un.org/data/cache/reporterAreas.json)
-     - partner    [p]    : partner code or list of partner codes or 'all' (see https://comtrade.un.org/data/cache/partnerAreas.json)
-     - product    [cc]   : commodity code valid in the selected classification (here: Harmonized System HS) or 'total' (= aggregated) or 'all' or 'HG2', 'HG4' or 'HG6' (= all 2-, 4- and 6-digit HS commodities)
-     - tradeflow  [rg]   : 1 (for imports) or 2 (for exports); see https://comtrade.un.org/data/cache/tradeRegimes.json for further options
+     As documented in the API documentation.
+
+     More intuitive options for the parameters:
+      period, reporter, partner and tradeflow are only available in the function 'download_trade_data'
+
+      - period     [ps]   : depending on freq, either YYYY or YYYYMM (or a list of those) or 'now' or 'recent'
+       (= 5 most recent years/ months) or 'all'
+
+      - frequency  [freq] : 'A' (= annual) or 'M' (= monthly)
+
+      - reporter   [r]    : reporter code or list of reporter codes or 'all'
+       (see https://comtrade.un.org/data/cache/reporterAreas.json)
+
+      - partner    [p]    : partner code or list of partner codes or 'all'
+       (see https://comtrade.un.org/data/cache/partnerAreas.json)
+
+      - product    [cc]   : commodity code valid in the selected classification
+       (here: Harmonized System HS) or 'total' (= aggregated) or 'all' or 'HG2', 'HG4' or 'HG6'
+       (= all 2-, 4- and 6-digit HS commodities)
+
+      - tradeflow  [rg]   : 1 (for imports) or 2 (for exports);
+       see https://comtrade.un.org/data/cache/tradeRegimes.json for further options
     """
 
     fmt = 'csv' if human_readable else 'json'
@@ -243,11 +267,12 @@ def transform_trade_flow(tradeflow):
 
 def transform_period(period, frequency):
     """
-    detects 'YYYY-YYYY' or 'YYYYMM-YYYYMM' inputs and transforms them into lists of YYYY or YYYYMM that the API can understand
+    detects 'YYYY-YYYY' or 'YYYYMM-YYYYMM' inputs and transforms them
+    into lists of YYYY or YYYYMM that the API can understand
     the function does not check whether the other inputs for period are valid!
 
-    period: depending on freq, either YYYY or YYYYMM (or 'YYYY-YYYY'/ 'YYYYMM-YYYYMM' or a list of those) or 'now' or 'recent' or 'all'
-    frequency: 'A' or 'M'
+    period: depending on freq, either YYYY or YYYYMM
+    (or 'YYYY-YYYY'/ 'YYYYMM-YYYYMM' or a list of those) or 'now' or 'recent' or 'all' frequency: 'A' or 'M'
     """
 
     period = [period] if not isinstance(period, list) else period
