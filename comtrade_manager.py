@@ -119,7 +119,7 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
                                                blob_manager.to_parquet(filename))
 
         if verbose:
-            print('{} records downloaded and saved as {}.'.format(len(df_all), filename))
+            print(f'{len(df_all)} records downloaded and saved as {filename}.')
 
 
 def download_trade_database(human_readable=False, verbose=True, period='recent', frequency='A', reporter=842,
@@ -186,14 +186,14 @@ def download_trade_database(human_readable=False, verbose=True, period='recent',
         if not json_dict['dataset']:
 
             if verbose:
-                print('Error: empty dataset \n Message: {}'.format(message))
+                print(f'Error: empty dataset \n Message: {message}')
 
             dataframe = None
 
         else:
 
             if verbose and message:
-                print('Message: {}'.format(message))
+                print(f'Message: {message}')
 
             dataframe = pd.DataFrame.from_dict(json_dict['dataset'])
 
@@ -355,19 +355,20 @@ def find_country_code(country, reporter_or_partner):
     mask2 = (df.text.str.contains(country))
 
     if sum(mask2) > 0:
-        print('There is no country in the json-file with the exact name "{}". '.format(country) +
-              'The following countries contain the word "{}". '.format(country) +
-              'If you think that one of the following countries is the one that you are looking for, press "y".')
+        print(f'There is no country in the json-file with the exact name "{country}". ' +
+              f'The following countries contain the word "{country}". ' +
+              f'If you think that one of the following countries is the one that you are looking for, press "y".')
+
         dict_matches = df[mask2].text.to_dict()
 
         for code, country in dict_matches.items():
-            response = input('{} {} [y?] '.format(code, country))
+            response = input(f'{code} {country} [y?] ')
 
             if response == 'y':
                 return code
 
     # if no code could be found:
-    raise LookupError('It was not possible to find a code that corresponds to the country {}.'.format(country))
+    raise LookupError(f'It was not possible to find a code that corresponds to the country {country}.')
 
 
 def download_country_codes_file(reporter_or_partner):
@@ -376,14 +377,14 @@ def download_country_codes_file(reporter_or_partner):
 
     input: 'reporter' or 'partner'
     """
-    url = 'https://comtrade.un.org/data/cache/{}Areas.json'.format(reporter_or_partner)
+    url = f'https://comtrade.un.org/data/cache/{reporter_or_partner}Areas.json'
 
     json_dict = requests.get(url).json()
 
     df = pd.DataFrame.from_dict(json_dict['results'])
     df = df.set_index('id')
     df.drop('all', inplace=True)
-    df.to_csv('{}Areas.csv'.format(reporter_or_partner))
+    df.to_csv(f'{reporter_or_partner}Areas.csv')
 
 
 def dict_item_to_string(key, value):
