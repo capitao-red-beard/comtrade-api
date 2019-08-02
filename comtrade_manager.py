@@ -58,7 +58,7 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
         if df is not None:
             dfs.append(df)
 
-        sleep(1)  # wait 1 second because of API rate limit
+        # sleep(1)  # wait 1 second because of API rate limit (this is no longer required if using the api key)
 
     # (4) save dataframe as csv file
 
@@ -80,6 +80,9 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
 def download_trade_database(human_readable=False, verbose=True, period='recent', frequency='A', reporter=842,
                             partner='all', product='total', tradeflow=2):
 
+    f = open('comtrade_api_key.txt', 'r')
+    api_key = f.read()
+
     fmt = 'csv' if human_readable else 'json'
     head = 'H' if human_readable else 'M'
 
@@ -95,7 +98,8 @@ def download_trade_database(human_readable=False, verbose=True, period='recent',
         'fmt': fmt,  # format of the output
         'max': 50000,  # maximum number of rows -> what happens if number of rows is bigger???
         # https://comtrade.un.org/data/dev/portal#subscription says it is 100 000
-        'head': head  # human readable headings ('H') or machine readable headings ('M')
+        'head': head,  # human readable headings ('H') or machine readable headings ('M')
+        'token': api_key # the api key used to access the premium version of the api
     }
 
     url = base_url + dict_to_string(parameters)
@@ -107,7 +111,7 @@ def download_trade_database(human_readable=False, verbose=True, period='recent',
         dataframe = pd.read_csv(url)
 
     else:
-        json_dict = requests.get(url).json()
+        json_dict = requests.get(url, headers={'Authorization': api_key}).json()
 
         '''
         r = ProxyRequests(url)
