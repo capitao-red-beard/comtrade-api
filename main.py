@@ -1,8 +1,6 @@
 import comtrade_manager as cm
 
-# years = '201601-201812'
-
-years = '201601-201602'
+years = '201601-201812'
 
 dict_countries = {40: 'austria', 112: 'belarus', 56: 'belgium', 100: 'bulgaria', 191: 'croatia', 196: 'cyprus',
                   203: 'czechia', 208: 'denmark', 233: 'estonia', 246: 'finland', 251: 'france', 276: 'germany',
