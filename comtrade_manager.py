@@ -1,5 +1,6 @@
 import itertools
 import os.path
+import os
 from time import sleep
 
 import numpy as np
@@ -80,7 +81,8 @@ def download_trade_data(filename, human_readable=False, verbose=True, period='20
 def download_trade_database(human_readable=False, verbose=True, period='recent', frequency='A', reporter=842,
                             partner='all', product='total', tradeflow=2):
 
-    f = open('comtrade_api_key.txt', 'r')
+    keypath = os.getcwd() + '\key\comtrade_api_key.txt'
+    f = open(keypath, 'r')
     api_key = f.read()
 
     fmt = 'csv' if human_readable else 'json'
