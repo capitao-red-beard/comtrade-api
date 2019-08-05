@@ -113,7 +113,7 @@ def download_trade_database(human_readable=False, verbose=True, period='recent',
         dataframe = pd.read_csv(url)
 
     else:
-        json_dict = requests.get(url, headers={'Authorization': api_key}).json()
+        json_dict = requests.get(url).json()
 
         '''
         r = ProxyRequests(url)
