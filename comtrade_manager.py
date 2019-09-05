@@ -11,6 +11,11 @@ import blob_manager
 
 base_url = "https://comtrade.un.org/api/get?"
 
+keypath = os.getcwd() + "\key\comtrade_api_key.txt"
+
+with open(keypath, "r") as f:
+    api_key = f.read()
+
 
 def download_trade_data(
     filename,
@@ -119,10 +124,6 @@ def download_trade_database(
     product="total",
     tradeflow=2,
 ):
-
-    keypath = os.getcwd() + "\key\comtrade_api_key.txt"
-    f = open(keypath, "r")
-    api_key = f.read()
 
     fmt = "csv" if human_readable else "json"
     head = "H" if human_readable else "M"
