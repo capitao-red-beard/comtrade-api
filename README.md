@@ -1,6 +1,6 @@
 # Comtrade API
 
-This project is a collection of functions which help a user to download data from the Comtrade API. 
+This project is a collection of functions which help a user to download data from the Comtrade API.
 
 ## Dependencies
 
