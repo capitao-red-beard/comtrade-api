@@ -8,16 +8,17 @@ Please read the requirements.txt file for all the requirements. To install them 
 
 - `pip install -r requirements.txt`
 
-## How to:
+## How to
 
 This is a short into on how to use each of the functions, I originally placed this within the code itself to support Jupyter notebook users as docstrings but this was cumborsome and verbose.
 
-### download_trade_data:
+### download_trade_data
 
 Downloads records from the UN Comtrade database and saves them in a csv-file with the name `filename`.
 If necessary, it calls the API several times.
 
 There are two modes:
+
 - `human_readable = False (default):`
     headings in output are not human-readable but error messages from the API are received and displayed
 
@@ -33,6 +34,7 @@ in order to suppress both messages from the API and messages like '100 records d
 Parameters:
 Using parameter values suggested in the API documentation should always work.
 For the parameters period, reporter, partner and tradeflow more intuitive options have been added.
+
 - `period     [ps]   :` depending on freq, either `YYYY` or `YYYYMM` (or `YYYY-YYYY`/ `YYYYMM-YYYYMM` or a list of those)
 or `now` or `recent` (= 5 most recent years/ months) or `all`
 
@@ -66,11 +68,12 @@ Classification codes (cc) are limited to `20 items`. ALL is always a valid class
 If you hit a usage limit a `409 (conflict) error` is returned
 along with a message specifying why the request was blocked and when requests may resume.
 
-### download_trade_database:
+### download_trade_database
 
 Downloads records from the UN Comtrade database and returns pandas dataframe using one API call.
 
 There are two modes:
+
 - `human_readable = False (default):` headings in output are not human-readable
     but error messages from the API are received and displayed
 - `human_readable = True:` headings in output are human-readable
@@ -103,7 +106,7 @@ period, reporter, partner and tradeflow are only available in the function `down
 - `tradeflow  [rg]   :` 1 (for imports) or 2 (for exports);
 (see `https://comtrade.un.org/data/cache/tradeRegimes.json`) for further options
 
-### main.py:
+### main.py
 
 1. Pick your date range and instantiate the variable `years` with this value, this can be either year-year or monthyear-monthyear.
 2. Pick the countries which you are interested to see data pulled from, fill these values into `dict_countries`, if you need help to find country codes simply navigate to the `reporterAreas.csv` in this repo.
