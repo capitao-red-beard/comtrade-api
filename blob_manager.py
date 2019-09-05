@@ -9,11 +9,13 @@ from fastparquet import write
 
 import keyring
 
-account_name = 'samsmdpblobdev02'
-container_name = 'raw'
-block_blob_service = BlockBlobService(account_name=account_name, account_key=keyring.get_password('azure_blob',
-                                                                                                  account_name))
-local_path = Path(os.path.expanduser('~/Documents'))
+account_name = "samsmdpblobdev02"
+container_name = "raw"
+block_blob_service = BlockBlobService(
+    account_name=account_name,
+    account_key=keyring.get_password("azure_blob", account_name),
+)
+local_path = Path(os.path.expanduser("~/Documents"))
 
 
 def create_blob_from_path(blob_name, file_name):
@@ -28,7 +30,10 @@ def update_blob_from_path(blob_name, data_frame):
         df_local = pf_local.to_pandas()
 
     except ParquetException:
-        print('Failed to convert blob to parquet or create pandas from parquet ' + str(ParquetException))
+        print(
+            "Failed to convert blob to parquet or create pandas from parquet "
+            + str(ParquetException)
+        )
 
     df_to_submit = pd.concat([df_local, data_frame])
 
@@ -36,7 +41,7 @@ def update_blob_from_path(blob_name, data_frame):
         write(local_path, df_to_submit)
 
     except ParquetException:
-        print('Failed to convert pandas to parquet ' + str(ParquetException))
+        print("Failed to convert pandas to parquet " + str(ParquetException))
 
     block_blob_service.create_blob_from_path(container_name, blob_name, local_path)
 
@@ -50,7 +55,7 @@ def get_blob_list():
     generator = block_blob_service.list_blobs(container_name)
 
     for blob in generator:
-        blobs.append('Blob Name: {}'.format(blob.name))
+        blobs.append("Blob Name: {}".format(blob.name))
 
     return blobs
 
@@ -72,7 +77,7 @@ def get_container_list():
     generator = block_blob_service.list_containers()
 
     for container in generator:
-        containers.append('Container Name: {}'.format(container.name))
+        containers.append("Container Name: {}".format(container.name))
 
     return containers
 
@@ -84,4 +89,4 @@ def generate_blob_name(csv_file):
 def to_parquet(csv_file):
     df = pd.read_csv(csv_file)
 
-    return df.to_parquet('output.parquet')
+    return df.to_parquet("output.parquet")
