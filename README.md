@@ -113,4 +113,4 @@ period, reporter, partner and tradeflow are only available in the function `down
 3. Pick your product list, these values can be found on the comtrade API web page `https://comtrade.un.org/data`.
 4. Run the code in whichever way you see fit my advice is go into the terminal and navigate to the directory and type in `python3 main.py`.
 5. ***WARNING*** this project may take an extremely long time to run due to the limitatios of the API... there is currently a hard coded pause built into the code which helps us not reach the API request limit and get an error code back.
-6. If you have any questions just shoot by my desk!
+6. If you have any questions just shoot me a message!
