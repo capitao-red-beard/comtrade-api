@@ -319,10 +319,12 @@ def find_country_code(country, reporter_or_partner):
     # we use a local copy of the file with country codes so that we do
     # not have to use
     # https://comtrade.un.org/data/cache/reporterAreas.json every time
-    if not os.path.exists(reporter_or_partner + "Areas.csv"):
+    if not os.path.exists(reporter_or_partner + "_areas.csv"):
         download_country_codes_file(reporter_or_partner)
 
-    df = pd.read_csv(reporter_or_partner + "Areas.csv", encoding="latin_1", index_col=0)
+    df = pd.read_csv(
+        reporter_or_partner + "_areas.csv", encoding="latin_1", index_col=0
+    )
 
     # look for an exact match
     mask = df.text == country
@@ -372,7 +374,7 @@ def download_country_codes_file(reporter_or_partner):
     df = pd.DataFrame.from_dict(json_dict["results"])
     df = df.set_index("id")
     df.drop("all", inplace=True)
-    df.to_csv(f"{reporter_or_partner}Areas.csv")
+    df.to_csv(f"{reporter_or_partner}_areas.csv")
 
 
 def dict_item_to_string(key, value):
@@ -405,7 +407,7 @@ def product_codes_with_parent(parent_code):
     """
     Returns a python dictionary with all entries that belong to parent_code.
     """
-    if not os.path.exists("classificationHS.csv"):
+    if not os.path.exists("classification_hs.csv"):
         download_product_codes_file()
 
     df = load_product_codes_file()
@@ -434,7 +436,7 @@ def search_product_code(pat, case=True, flags=0, regex=True, n_digits=None):
     regex : bool, default True
         If True use re.search, otherwise use Python in operator
     """
-    if not os.path.exists("classificationHS.csv"):
+    if not os.path.exists("classification_hs.csv"):
         download_product_codes_file()
 
     df = load_product_codes_file()
@@ -456,7 +458,7 @@ def load_product_codes_file():
     """
     Loads the product codes file as a pandas dataframe.
     """
-    df = pd.read_csv("classificationHS.csv", encoding="latin-1", index_col="id")
+    df = pd.read_csv("classification_hs.csv", encoding="latin-1", index_col="id")
 
     return df
 
@@ -476,4 +478,4 @@ def download_product_codes_file():
     df.text = df.text.apply(
         lambda x: " - ".join(x.split(" - ")[1:])
     )  # remove digits from beginning of text
-    df.to_csv("classificationHS.csv")
+    df.to_csv("classification_hs.csv")
