@@ -1,7 +1,6 @@
 import itertools
 import os.path
 import os
-from time import sleep
 
 import numpy as np
 import pandas as pd
@@ -11,7 +10,7 @@ import blob_manager
 
 base_url = "https://comtrade.un.org/api/get?"
 
-keypath = os.getcwd() + "\key\comtrade_api_key.txt"
+keypath = os.getcwd() + r"\key\comtrade_api_key.txt"
 
 with open(keypath, "r") as f:
     api_key = f.read()
@@ -80,10 +79,10 @@ def download_trade_data(
         df = download_trade_database(
             human_readable=human_readable,
             verbose=verbose,
-            period=period[k : k + 5],
-            reporter=reporter[i : i + 5],
-            partner=partner[j : j + 5],
-            product=product[m : m + 20],
+            period=period[k: k + 5],
+            reporter=reporter[i: i + 5],
+            partner=partner[j: j + 5],
+            product=product[m: m + 20],
             tradeflow=tradeflow,
             frequency=frequency,
         )
@@ -99,7 +98,8 @@ def download_trade_data(
     if len(dfs) > 0:
         df_all = pd.concat(dfs)
 
-        filename = filename if len(filename.split(".")) == 2 else filename + ".csv"
+        filename = filename if len(
+            filename.split(".")) == 2 else filename + ".csv"
         # add '.csv' if necessary
 
         df_all.to_csv(filename)
@@ -140,7 +140,8 @@ def download_trade_database(
         "fmt": fmt,  # format of the output
         "max": 50000,  # maximum number of rows
         # https://comtrade.un.org/data/dev/portal#subscription says it is 100 000
-        "head": head,  # human readable headings ('H') or machine readable headings ('M')
+        # human readable headings ('H') or machine readable headings ('M')
+        "head": head,
         "token": api_key,  # the api key used to access the premium version of the api
     }
 
@@ -189,7 +190,8 @@ def transform_reporter(reporter):
     reporter = [reporter] if not isinstance(reporter, list) else reporter
 
     # replace country names by country codes
-    reporter = [r if is_country_code(r) else find_reporter_code(r) for r in reporter]
+    reporter = [r if is_country_code(
+        r) else find_reporter_code(r) for r in reporter]
 
     return reporter
 
@@ -202,7 +204,8 @@ def transform_partner(partner):
     partner = [partner] if not isinstance(partner, list) else partner
 
     # replace country names by country codes
-    partner = [p if is_country_code(p) else find_partner_code(p) for p in partner]
+    partner = [p if is_country_code(
+        p) else find_partner_code(p) for p in partner]
 
     return partner
 
@@ -386,7 +389,8 @@ def dict_item_to_string(key, value):
     examples: 'fmt', 'csv' => 'fmt=csv' or 'r', [124, 484] => 'r=124,484'
     """
     value_string = (
-        str(value) if not isinstance(value, list) else ",".join(map(str, value))
+        str(value) if not isinstance(
+            value, list) else ",".join(map(str, value))
     )
 
     return "=".join([key, value_string])
@@ -458,7 +462,8 @@ def load_product_codes_file():
     """
     Loads the product codes file as a pandas dataframe.
     """
-    df = pd.read_csv("classification_hs.csv", encoding="latin-1", index_col="id")
+    df = pd.read_csv("classification_hs.csv",
+                     encoding="latin-1", index_col="id")
 
     return df
 
