@@ -50,5 +50,5 @@ for k in dict_countries:
         frequency="M",
         reporter=k,
         partner=list(dict_countries),
-        product=product_list
+        product="HG2"
     )
