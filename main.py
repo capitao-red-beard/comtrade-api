@@ -1,6 +1,6 @@
 import comtrade_manager as cm
 
-years = "201601-201812"
+years = "201601-201908"
 
 dict_countries = {
     40: "austria",
@@ -36,58 +36,10 @@ dict_countries = {
     752: "sweden",
     757: "switzerland",
     792: "turkey",
-    826: "united kingdom",
+    826: "united kingdom"
 }
 
-product_list = [
-    "02",
-    "03",
-    "04",
-    "10",
-    "07",
-    "17",
-    "09",
-    "21",
-    "22",
-    "24",
-    "12",
-    "44",
-    "45",
-    "48",
-    "31",
-    "41",
-    "4301",
-    "2701",
-    "2704",
-    "15",
-    "1515",
-    "29",
-    "28",
-    "32",
-    "30",
-    "33",
-    "31",
-    "39",
-    "72",
-    "8472",
-    "903081",
-    "40",
-    "903040",
-    "85",
-    "87",
-    "94",
-    "9406",
-    "83",
-    "64",
-    "9018",
-    "37",
-    "93",
-    "8715",
-    "97",
-    "71",
-    "92",
-    "96",
-]
+product_list = [f"{i:02d}" for i in range(1, 100) if i != 98]
 
 for k in dict_countries:
     print(f"{dict_countries[k]}_{years}")
@@ -98,5 +50,5 @@ for k in dict_countries:
         frequency="M",
         reporter=k,
         partner=list(dict_countries),
-        product=product_list,
+        product=product_list
     )

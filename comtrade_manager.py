@@ -25,7 +25,7 @@ def download_trade_data(
     reporter="USA",
     partner="all",
     product="total",
-    tradeflow="exports",
+    tradeflow="all",
     blob=False,
 ):
 
@@ -48,7 +48,7 @@ def download_trade_data(
             "Only one of the parameters 'reporter', 'partner' and 'period' "
             "may use the special ALL value in a given API call."
         )
-
+    # This may limit API speed if left at 5 parameter max.
     if any(len(inpt) > 5 for inpt in [reporter, partner, period]) and human_readable:
         print(
             "Using the option human_readable=True is not recommended "
@@ -68,9 +68,10 @@ def download_trade_data(
     # (3) download data by doing one or several API calls
 
     dfs = []
-
-    slice_points = [range(0, len(inpt), 5) for inpt in [reporter, partner, period]] + [
-        range(0, len(product), 20)
+    # If you wish to change the speed of data recovery change this value
+    # do not use a higher value as it will cause the app to crash.
+    slice_points = [range(0, len(inpt), 20) for inpt in [reporter, partner, period]] + [
+        range(0, len(product), 98)
     ]
     # since the parameters reporter, partner and period are limited to
     # 5 inputs each and product is limited to 20 inputs
@@ -79,10 +80,10 @@ def download_trade_data(
         df = download_trade_database(
             human_readable=human_readable,
             verbose=verbose,
-            period=period[k: k + 5],
-            reporter=reporter[i: i + 5],
-            partner=partner[j: j + 5],
-            product=product[m: m + 20],
+            period=period[k: k + 20],
+            reporter=reporter[i: i + 20],
+            partner=partner[j: j + 20],
+            product=product[m: m + 98],
             tradeflow=tradeflow,
             frequency=frequency,
         )
@@ -138,7 +139,7 @@ def download_trade_database(
         "px": "HS",  # Harmonized System (as reported) as classification scheme
         "type": "C",  # Commodities ('S' for Services)
         "fmt": fmt,  # format of the output
-        "max": 50000,  # maximum number of rows
+        "max": 250000,  # maximum number of rows
         # https://comtrade.un.org/data/dev/portal#subscription says it is 100 000
         # human readable headings ('H') or machine readable headings ('M')
         "head": head,
@@ -152,7 +153,6 @@ def download_trade_database(
 
     if human_readable:
         dataframe = pd.read_csv(url)
-
     else:
         json_dict = requests.get(url).json()
 
@@ -178,7 +178,7 @@ def download_trade_database(
                 print(f"Message: {message}")
 
             dataframe = pd.DataFrame.from_dict(json_dict["dataset"])
-
+        
     return dataframe
 
 
