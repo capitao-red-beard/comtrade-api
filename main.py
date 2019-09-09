@@ -1,6 +1,6 @@
 import comtrade_manager as cm
 
-years = "201601-201908"
+years = "201806-201906"
 
 dict_countries = {
     40: "austria",
@@ -50,5 +50,5 @@ for k in dict_countries:
         frequency="M",
         reporter=k,
         partner=list(dict_countries),
-        product="HG2"
+        product=product_list
     )

@@ -11,6 +11,7 @@ import blob_manager
 base_url = "https://comtrade.un.org/api/get?"
 
 keypath = os.getcwd() + r"\key\comtrade_api_key.txt"
+results_path = os.getcwd() + r"\data\results"
 
 with open(keypath, "r") as f:
     api_key = f.read()
@@ -71,7 +72,7 @@ def download_trade_data(
     # If you wish to change the speed of data recovery change this value
     # do not use a higher value as it will cause the app to crash.
     slice_points = [range(0, len(inpt), 20) for inpt in [reporter, partner, period]] + [
-        range(0, len(product), 98)
+        range(0, len(product), 40)
     ]
     # since the parameters reporter, partner and period are limited to
     # 5 inputs each and product is limited to 20 inputs
@@ -83,7 +84,7 @@ def download_trade_data(
             period=period[k: k + 20],
             reporter=reporter[i: i + 20],
             partner=partner[j: j + 20],
-            product=product[m: m + 98],
+            product=product[m: m + 40],
             tradeflow=tradeflow,
             frequency=frequency,
         )
@@ -103,7 +104,7 @@ def download_trade_data(
             filename.split(".")) == 2 else filename + ".csv"
         # add '.csv' if necessary
 
-        df_all.to_csv(filename)
+        df_all.to_csv(f"{results_path}\{filename}")
 
         if blob:
             blob_manager.create_blob_from_path(
