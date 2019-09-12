@@ -1,6 +1,8 @@
 import comtrade_manager as cm
+import xlrd
 
-years = "201806-201906"
+
+years = "201907-201908"
 
 dict_countries_reporter = {
     40: "austria",
@@ -77,6 +79,14 @@ dict_countries_partner = {
 }
 
 product_list = [f"{i:02d}" for i in range(1, 100) if i != 98]
+wb = xlrd.open_workbook('data\HS4_codes.xlsx')
+sheet = wb.sheet_by_index(0)
+products = sheet.col_values(0, 1)
+
+to_remove_products = [i[0:2] for i in products]
+to_remove_products = list(set(to_remove_products))
+subtracted_list = [i for i in product_list if i not in to_remove_products]
+product_list = subtracted_list + products
 
 for k in dict_countries_reporter:
     print(f"{dict_countries_reporter[k]}_{years}")
