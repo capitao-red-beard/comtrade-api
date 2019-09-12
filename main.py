@@ -84,8 +84,8 @@ sheet = wb.sheet_by_index(0)
 products = sheet.col_values(0, 1)
 
 to_remove_products = [i[0:2] for i in products]
-to_remove_products = list(set(to_remove_products))
-subtracted_list = [i for i in product_list if i not in to_remove_products]
+subtracted_list = [i for i in product_list 
+                   if i not in list(set(to_remove_products))]
 product_list = subtracted_list + products
 
 for k in dict_countries_reporter:
