@@ -82,9 +82,8 @@ products = xlrd.open_workbook('data\HS4_codes.xlsx').sheet_by_index(0).col_value
 
 product_list = [f"{i:02d}" for i in range(1, 100) if i != 98]
 to_remove_products = [i[0:2] for i in products]
-subtracted_list = [i for i in product_list 
-                   if i not in list(set(to_remove_products))]
-product_list = subtracted_list + products
+product_list = [i for i in product_list 
+                   if i not in list(set(to_remove_products))] + products
 
 for k in dict_countries_reporter:
     print(f"{dict_countries_reporter[k]}_{years}")
