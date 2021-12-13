@@ -18,7 +18,7 @@ idna==2.8
 isodate==0.6.0
 keyring==19.0.2
 llvmlite==0.29.0
-lxml==4.4.0
+lxml==4.6.5
 numba==0.45.0
 numpy==1.17.0
 pandas==0.25.0
