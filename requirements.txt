@@ -20,7 +20,7 @@ keyring==19.0.2
 llvmlite==0.29.0
 lxml==4.4.0
 numba==0.45.0
-numpy==1.17.0
+numpy==1.22.0
 pandas==0.25.0
 pycparser==2.19
 python-dateutil==2.8.0
